@@ -1,0 +1,8 @@
+Basic AWS nitro-enclaves image format i.e., EIF (Enclaves Image Format) parsing
+code in C. Right now, it prints the EIF header, EIF section headers and the json
+metadata in metadata section to stdout.
+
+Compile: gcc -Wall -Wextra -Werror -std=c99 -O2 eif_parse.c -o eif_parse
+Run: ./eif_parse hello.eif
+
+Ref: https://github.com/aws/aws-nitro-enclaves-image-format
