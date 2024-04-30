@@ -158,6 +158,7 @@ void print_eif_section_header(EifSectionHeader *header) {
 void parse_eif_file(const char *eif_path) {
     EifHeader eif_header;
     uint8_t *metadata = NULL;
+    uint8_t *cmdline = NULL;
     uint8_t *buf = NULL;
     int fd;
     ssize_t got;
@@ -230,8 +231,31 @@ void parse_eif_file(const char *eif_path) {
 
             metadata[size - 1] = '\0';
         }
+
+        if (cmdline == NULL && eif_section_header.section_type == 2) {
+            size_t size = eif_section_header.section_size + 1;
+            cmdline = malloc(size);
+            if (cmdline == NULL) {
+                fprintf(stderr, "Failed to allocate memory for cmdline\n");
+                exit(1);
+            }
+
+            got = read(fd, cmdline, size);
+            if (got != (ssize_t) size) {
+                fprintf(stderr, "Failed to read cmdline\n");
+                exit(1);
+            }
+
+            cmdline[size - 1] = '\0';
+        }
     }
     fprintf(stdout, "------EIF Section Headers------\n\n");
+
+    if (cmdline) {
+        fprintf(stdout, "------cmdline------\n");
+        fprintf(stdout, "%s\n", cmdline);
+        fprintf(stdout, "------cmdline------\n\n");
+    }
 
     if (metadata) {
         fprintf(stdout, "------metadata json------\n");
@@ -240,6 +264,7 @@ void parse_eif_file(const char *eif_path) {
     }
 
     free(metadata);
+    free(cmdline);
     free(buf);
     close(fd);
 }
