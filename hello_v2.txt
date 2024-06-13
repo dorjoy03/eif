@@ -1,0 +1,11 @@
+Start building the Enclave Image...
+Using the locally available Docker image...
+Enclave Image successfully created.
+{
+  "Measurements": {
+    "HashAlgorithm": "Sha384 { ... }",
+    "PCR0": "b91a83a22b5f2d013a265e9b1ac46fdd3c23c803dcd3126dd512405d880b98999d651ae3cc854e8ce88fe3e9969f2957",
+    "PCR1": "bcdf05fefccaa8e55bf2c8d6dee9e79bbff31e34bf28a99aa19e6b29c37ee80b214a414b7607236edf26fcb78654e63f",
+    "PCR2": "34f946c635c5c4d80b885d9a71b770f710f472f7e1bc824433c9da42cc4765eb29827189873a023dcc175cb8c2771789"
+  }
+}
