@@ -116,6 +116,9 @@ void print_eif_header(EifHeader *header) {
     fprintf(stdout, "default memory  %lu\n", header->default_memory);
     fprintf(stdout, "default cpus    %lu\n", header->default_cpus);
     fprintf(stdout, "section count   %d\n", header->section_cnt);
+    for (int i = 0; i < header->section_cnt; ++i) {
+        fprintf(stdout, "section %d offset %lu\n", i, header->section_offsets[i]);
+    }
     fprintf(stdout, "crc32           %u\n", header->eif_crc32);
     fprintf(stdout, "------EIF Header------\n\n");
 }
@@ -157,6 +160,7 @@ void print_eif_section_header(EifSectionHeader *header) {
 
 void parse_eif_file(const char *eif_path) {
     EifHeader eif_header;
+    uint8_t *kernel = NULL;
     uint8_t *metadata = NULL;
     uint8_t *cmdline = NULL;
     uint8_t *buf = NULL;
@@ -230,6 +234,28 @@ void parse_eif_file(const char *eif_path) {
             }
 
             metadata[size - 1] = '\0';
+        }
+
+        if (kernel == NULL && eif_section_header.section_type == 1) {
+            size_t size = eif_section_header.section_size;
+            kernel = malloc(size);
+            if (kernel == NULL) {
+                fprintf(stderr, "Faield to allocate memory for kernel\n");
+                exit(1);
+            }
+
+            got = read(fd, kernel, size);
+            if (got != (ssize_t) size) {
+                fprintf(stderr, "Failed to read kernel\n");
+                exit(1);
+            }
+
+            int wfd = open("/home/dorjoy/Projects/eif/kernel_bzImage", O_WRONLY | O_CREAT);
+            got = write(wfd, kernel, size);
+            if (got != (ssize_t) size) {
+                fprintf(stderr, "Failed to write kernel to /home/dorjoy/Projects/eif/kernel_bzImage");
+                exit(1);
+            }
         }
 
         if (cmdline == NULL && eif_section_header.section_type == 2) {
